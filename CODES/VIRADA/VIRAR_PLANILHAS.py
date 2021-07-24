@@ -30,6 +30,10 @@ def main(path_atual,path_virada,dir_virada,fechamento_virada):
 
         # VIRANDO DATAS DOS CLIENTS ATUAIS
         df_atual = virando_datas(df_atual,fechamento_virada)
+
+        # VIRANDO CLIENTES COM SEGUNDA VIGÊNCIA DIA 25, CASO HAJA
+        df_clientes_25_pt2 = df_atual.loc[(df_atual['FIM DA VIG'].dt.day == 25) & (df_atual['ENTRADA'].dt.day == 26) & ~(df_atual['ENTRADA'].dt.date > fechamento_virada)].copy()
+        df_clientes_25_pt2 = virando_datas(df_clientes_25_pt2,fechamento_virada)
         
         # CHECANDO CLIENTES COM VIGÊNCIA INICIAL MAIOR QUE DIA 25 DO MÊS DE FECHAMENTO DA VIRADA
         df_clientes_mais_25 = df_atual.loc[df_atual['ENTRADA'].dt.date > fechamento_virada].copy()
@@ -38,6 +42,7 @@ def main(path_atual,path_virada,dir_virada,fechamento_virada):
 
         # JUNTANDO DATAFRAME PADRÃO E DF CLIENTES DO DIA 25
         df_virada = df_atual.append(df_clientes_25,ignore_index=True)
+        df_virada = df_virada.append(df_clientes_25_pt2,ignore_index=True)
     else:
         df_virada = df_atual.copy()
     
